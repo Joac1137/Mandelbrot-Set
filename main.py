@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+import matplotlib.animation as animation
 
 def z(n, c):
     
@@ -38,16 +39,30 @@ def get_members(c, num_iterations):
     mask = is_stable(c, num_iterations)
     return c[mask]
 
-c = complex_matrix(-2, 0.5, -1.5, 1.5, pixel_density=1000)
+fig = plt.figure(figsize=(10, 10))  # instantiate a figure to draw
+ax = plt.axes()  # create an axes object
 
-plt.imshow(is_stable(c, num_iterations=20), cmap="binary")
-plt.gca().set_aspect("equal")
-plt.axis("off")
-plt.tight_layout()
-plt.show()
+def animate(i):
+    c = complex_matrix(-2, 0.5, -1.5, 1.5, pixel_density=1000)
+    
+    ax.clear()
+    ax.set_xticks([], [])
+    ax.set_yticks([], [])
 
-# for n, z in enumerate(sequence(c=-1)):
-#     print(f"z({n}) = {z}")
-#     if n >= 9:
-#         break
+    num_iterations = round(1.15**(i + 1))
+    X = is_stable(c=c, num_iterations=num_iterations)
+    
+    # associate colors to the iterations with an iterpolation
+    img = ax.imshow(X, interpolation="bicubic", cmap='magma')
+    return [img]
+ 
+anim = animation.FuncAnimation(fig, animate, frames=45, interval=120, blit=True)
+anim.save('mandelbrot.gif',writer='imagemagick')
 
+
+
+# plt.imshow(is_stable(c, num_iterations=20), cmap="binary")
+# plt.gca().set_aspect("equal")
+# plt.axis("off")
+# plt.tight_layout()
+# plt.show()
